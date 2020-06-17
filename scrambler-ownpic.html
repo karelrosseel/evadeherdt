@@ -1,0 +1,313 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>חותך תמונות בחסות מחולל המשחקים</title>
+
+    <!-- Welcome to ZIM at https://zimjs.com - Code Creativity!                              -->
+    <!-- ZIM runs on the HTML Canvas powered by JavaScript and CreateJS https://createjs.com -->
+    <!-- Founded by Inventor Dan Zen - http://danzen.com - Canadian New Media Award Winner   -->
+    <!-- ZIM is free to use. You can donate to help improve ZIM at https://zimjs.com/donate  -->
+
+    <meta property="og:title" content="חותך תמונות בחסות מחולל המשחקים" />
+    <meta property="og:url" content="https://closeapp.co.il/apps/pash/games/assets/imageShow/imageSlice.html" />
+    <meta property="og:image" content="https://closeapp.co.il/apps/pash/games/assets/imageShow/%D7%9E%D7%97%D7%95%D7%9C%D7%9C-%D7%9E%D7%A9%D7%97%D7%A7%D7%99%D7%9D-%D7%AA%D7%9E%D7%95%D7%A0%D7%94.jpg" />
+    <meta property="og:site_name" content="חותך תמונות בחסות מחולל המשחקים" />
+    <meta property="og:description" content="לחלק תמונה בשניה :)" />
+    <link rel="image_src" href="https://closeapp.co.il/apps/pash/games/assets/imageShow/%D7%9E%D7%97%D7%95%D7%9C%D7%9C-%D7%9E%D7%A9%D7%97%D7%A7%D7%99%D7%9D-%D7%AA%D7%9E%D7%95%D7%A0%D7%94.jpg" />
+
+    <script src="https://zimjs.org/cdn/1.3.2/createjs.js"></script>
+    <script src="https://zimjs.org/cdn/cat/00/zim.js"></script>
+    <!-- use zimjs.com/distill for minified individual functions! -->
+    <script>
+        (function(i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function() {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-82479204-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <script>
+
+        // SCALING OPTIONS
+        // scaling can have values as follows with full being the default
+        // "fit"	sets canvas and stage to dimensions and scales to fit inside window size
+        // "outside"	sets canvas and stage to dimensions and scales to fit outside window size
+        // "full"	sets stage to window size with no scaling
+        // "tagID"	add canvas to HTML tag of ID - set to dimensions if provided - no scaling
+
+        const scaling = "fit"; // this will resize to fit inside the screen dimensions
+        const width = 1720;
+        const height = 1080;
+        const color = pink; // ZIM colors like green, blue, pink, faint, clear, etc.
+        const outerColor = dark; // any HTML colors like "violet", "#333", etc. are fine to use
+
+        const frame = new Frame(scaling, width, height, color, outerColor);
+
+        var data;
+        var stage;
+        var item_arr = [];
+        var textEditor;
+        var save_btn;
+        var new_btn;
+        var picture;
+        var stepper_cols;
+        var stepper_rows;
+
+        frame.on("ready", () => { // ES6 Arrow Function - like function(){}
+            zog("ready from ZIM Frame"); // logs in console (F12 - choose console)
+
+            stage = frame.stage;
+            let stageW = frame.width;
+            let stageH = frame.height;
+
+            // see https://zimjs.com/learn.html for video and code tutorials
+            // see https://zimjs.com/docs.html for documentation
+            // see https://zimjs.com/bits.html for 64 Interactive Media techniques
+
+            // *** NOTE: ZIM Cat defaults to time in seconds
+            // All previous versions, examples, videos, etc. have time in milliseconds
+            // This can be set back with TIME = "milliseconds" but we suggest you give it a try!
+            // There will be a warning in the conslole if your animation is not moving ;-)
+            var json = {
+                "imageList":
+                    [
+                        {
+                            "id": 0,
+                            "src": "https://closeapp.co.il/apps/pash/imagesFromGames/%D7%9E%D7%A9%D7%97%D7%A7%20%D7%94%D7%AA%D7%99%D7%91%D7%94%20%D7%A9%D7%9C%20%D7%A0%D7%97%20-%20%D7%9E%D7%A9%D7%97%D7%A7%20%D7%9E%D7%A1%D7%9C%D7%95%D7%9C_small.jpg",
+                            "width": 100,
+                            "height": 100,
+                            "cols": 6,
+                            "rows": 7,
+                            "x": 300,
+                            "y": 0
+                        }
+                    ],
+                "textList":
+                    [
+                        {
+                            "id": 0, "text": "שלום שלום", "x": 400, "y": 600, "width": 100,
+                            "height": 100
+                        },
+                        {
+                            "id": 1, "text": "טקסט 2", "x": 100, "y": 100, "width": 100,
+                            "height": 100
+                        }
+                    ]
+            }
+            var ads = { "src": "https://closeapp.co.il/apps/pash/ads/MalGamesBanner2_1720x250.jpg", "link": "https://amihanya.wordpress.com/2019/06/23/%d7%9e%d7%97%d7%95%d7%9c%d7%9c-%d7%94%d7%9e%d7%a9%d7%97%d7%a7%d7%99%d7%9d-%d7%a9%d7%9c-closeapp/", "topText": "המשחק בחסות:", "bannerName": "MalGames", "loadFor": "desktop" };
+
+            var ad = asset(ads.src);
+            ad.pos({ x: 0, y: 0, horizontal: "center", vertical: "bottom" })
+            ad.cur();
+            ad.on("mousedown", function () {
+                zgo(ads.link, "_blank");
+            })
+
+            //updateAll(json);
+
+            save_btn = new Button({ label: "download", width: 250, height: 60,backgroundColor:pink });
+            save_btn.center().pos({ x: -150, y: 0, horizontal: "center", vertical: "bottom" })
+            save_btn.on("mousedown", function () {
+                save_btn.visible = false;
+                new_btn.visible = false;
+                ad.visible = false;
+                stepper_cols.visible = false;
+                stepper_rows.visible = false;
+                stage.update();
+                loader.save(picture);
+                new_btn.visible = true;
+                save_btn.visible = true;
+                ad.visible = true;
+                stepper_cols.visible = true;
+                stepper_rows.visible = true;
+                stage.update();
+            })
+
+            new_btn = new Button({ label: "new", width: 250, height: 60,backgroundColor:green });
+            new_btn.center().pos({ x: 150, y: 0, horizontal: "center", vertical: "bottom" })
+            new_btn.on("mousedown", function () {
+                location.reload();
+
+                stage.update();
+            })
+
+            /*
+            var textArea = new TextArea({placeholder:"image link",width:700, height:50, size:22, backgroundColor:pink, borderColor:blue, borderWidth:2}).center();
+
+              // to set scrollBars on TextArea use CSS on the TextArea tag property:
+            textArea.tag.style.overflow = "auto"; // etc.
+
+             // then the TextArea must be resized with the resize method
+            textArea.sca(1).mov();
+            textArea.resize();
+
+            */
+
+            new Label("ROWS").center().mov(-200, -470);;
+            var stepper = new Stepper({vertical :false,min:2, max:20});
+         
+            stepper.center().mov(-200, -370);
+            stepper_rows = stepper;
+            stepper_rows.currentValue =6;
+
+            new Label("COLS").center().mov(200, -470);;
+            var stepper = new Stepper({vertical :false,min:2, max:20});
+           
+            stepper.center().mov(200, -370);
+            stepper_cols = stepper;
+            stepper_cols.currentValue = 5;
+
+            var loader = new Loader({
+                frame: frame,
+                label: "UPLOAD PIC OR DROP PICS HERE",
+                width: 700,
+                height: 400,
+                corner: 50
+            }).center().mov(0, -70);
+            loader.on("loaded", function (e) {
+                loop(e.bitmaps, function (bitmap) {
+                    json.imageList[0].imageBitmap = bitmap;
+                    json.imageList[0].isBitmapData = true;
+                    json.imageList[0].cols = stepper_cols.currentValue;
+                    json.imageList[0].rows = stepper_rows.currentValue;
+                    updateAll(json);
+
+                });
+                loader.removeFrom(stage);
+                stage.update();
+            });
+
+
+
+
+            // if manually scaled or positioned (or container is scaled or positioned)
+
+
+            textEditor = new TextEditor({
+                // color:black,
+                // backgroundColor:green,
+                // fieldHeight:40,
+                colorList: true, // or array of colors
+                optionList: ["bold", "italic", "align"], // or true, or array with any of these
+                sizeList: true, // or array of sizes
+                fontList: true, // or array of fonts
+                live: true,
+                scroll: true
+            })
+
+
+
+            window.addEventListener("message", receiveMessage, false);
+
+            // without chaining
+            // const circle = new Circle(100, pink);
+            // circle.center();
+            // circle.drag();
+
+            stage.update(); // this is needed to show any changes
+
+        }); // end of ready
+
+        function receiveMessage(data) {
+            zog(data);
+            var nowData = data.data;
+            if (nowData.action == "updateAll") {
+                window[nowData.action](nowData.data)
+
+            }
+        }
+        function updateAll($data) {
+
+            data = $data;
+            var load_arr = [];
+            var thumbs = [];
+            loop(data.imageList, function (imageData) {
+                load_arr.push(imageData.src);
+            });
+            var loadAssets = frame.loadAssets(load_arr);
+            loadAssets.on("complete", function () {
+
+                var cols = data.imageList[0].cols;
+                var rows = data.imageList[0].rows;
+
+                if (data.imageList[0].isBitmapData == true) {
+                    zog(data.imageList[0].src)
+                    var image = new Bitmap(data.imageList[0].imageBitmap);
+                } else {
+                    var image = asset(data.imageList[0].src);
+                }
+                image.sca(stage.height / image.height);
+
+                var con = new Container();
+                image.addTo(con);
+
+                image = new Bitmap(con);
+                // image.addTo();
+
+                image = new Bitmap(image, image.width, image.height, 0, 0)
+                var w = image.width / cols;
+                var h = image.height / rows;
+                loop(rows, function (r) {
+                    loop(cols, function (c) {
+                        thumbs.push(new Bitmap(image, w, h, c * w, r * h));
+                    });
+                });
+
+
+                var tile = new Tile(thumbs, cols, rows, 0, 0, true);
+
+
+
+                picture = new Scrambler(tile).center();
+                picture.on("complete", function () {
+                    image.centerReg().animate({
+                        props: { rotation: 720 },
+                        time: 2,
+                        ease: "backInOut",
+                        call: function () {
+                            image.bot().drag({ boundary: stage, onTop: false });
+                        }
+                    })
+                    picture.removeFrom();
+                    stage.update();
+                });
+
+
+                // ZIM Cat
+                // here is the new TextEditor class to make a component to edit Label objects
+
+                save_btn.top();
+                new_btn.top();
+                stage.update();
+            });
+            // textEditor.show(label);
+
+        }
+
+        function parentUrl() {
+            var url = (window.location !== window.parent.location)
+                ? document.referrer
+                : document.location.href;
+            return url;
+        }
+    </script>
+
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+
+</head>
+
+<body style="direction: ltr;">
+    <!-- canvas with id="myCanvas" is made by zim Frame -->
+</body>
+
+</html>
