@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>ZIM BITS - Drag and Slide for JavaScript HTML 5 Canvas and CreateJS - Tips, Techniques and Tutorials</title>
+
+<!-- Welcome to ZIM at https://zimjs.com - Code Creativity!              	        -->
+<!-- ZIM runs on the HTML Canvas powered by JavaScript and CreateJS https://createjs.com -->
+<!-- Founded by Inventor Dan Zen - http://danzen.com - Canadian New Media Award Winner 	-->
+<!-- ZIM is free to use. You can donate to help improve ZIM at http://zimjs.com/donate 	-->
+
+<script src="https://d309knd7es5f10.cloudfront.net/createjs_1.1_min.js"></script>
+<script src="https://d309knd7es5f10.cloudfront.net/zim_9.4.1.js"></script>
+<!-- use zimjs.com/distill for minified individual functions! -->
+
+<script src="https://zimjs.com/bits/footer9.js"></script><!-- you will not need this -->
+
+<script>
+
+// SCALING OPTIONS
+// scaling can have values as follows with full being the default
+// "fit"	sets canvas and stage to dimensions and scales to fit inside window size
+// "outside"	sets canvas and stage to dimensions and scales to fit outside window size
+// "full"	sets stage to window size with no scaling
+// "tagID"	add canvas to HTML tag of ID - set to dimensions if provided - no scaling
+
+var scaling = "fit"; // this will resize to fit inside the screen dimensions
+var width = 1000;
+var height = 800;
+var color = dark; // or any HTML color such as "violet" or "#333333"
+var outerColor = light;
+// 1. load the assets to drag - add these to Frame() parameters
+var assets = "map.jpg"
+var path = "assets/";
+var waiter = new Waiter();
+
+var frame = new Frame(scaling, width, height, color, outerColor, assets, path, waiter);
+frame.on("ready", function() {
+	zog("ready from ZIM Frame");
+
+	var stage = frame.stage;
+	var stageW = frame.width;
+	var stageH = frame.height;
+
+	// ZIM BITS - Drag, Slide and Surround (2016)
+
+	// You can make an object slide after you have dragged it (like throwing)
+	// You can also keep an object inside a bounds or as in this example,
+	// make the object surround a bounds rectangle
+	// in doing so, you can snap to these bounds or make them a hard cuttoff
+
+	// EXTRA
+	// this example uses a mask for the map object that is being dragged
+	// you could try just using the stage bounds instead
+	// this would give the effect found at http://danzen.com/map.html
+	// you can also use the slide without the surround
+
+
+	// STEPS
+
+	// 1. load the assets to drag - add these to Frame() parameters
+	// 2. make a rectangle object to mask the drag object
+	// 3. set the mask of the asset to the rectangle
+	// 4. apply the drag() function with slide and surround parameters
+
+	// 2. make a rectangle object to mask the drag object
+	var rect = new Rectangle(600, 400)
+		.pos(200, 100);
+
+	// 3. set the mask of the asset to the rectangle
+	var map = frame.asset("map.jpg").addTo().setMask(rect);
+
+
+	// 4. apply the drag() function with slide and surround parameters
+	// pass in slideSnap:false to not snap
+	map.drag({
+		boundary:new Boundary(200, 100, 600, 400),
+		surround:true,
+		slide:true
+	});
+
+	var label = new Label("DRAG, SLIDE, SURROUND & SNAP", 30, null, "#666")
+		.pos(200, 540);
+
+	var docItems = "Frame,Rectangle,Label,Waiter,drag,pos,addTo,setMask,Boundary,zog";
+	makeFooter(stage, stageW, stageH, null, docItems); // ZIM BITS footer - you will not need this
+
+	stage.update();
+
+
+}); // end of ready
+
+</script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimal-ui" />
+
+</head>
+
+<body>
+<!-- canvas with id="myCanvas" is made by zim Frame -->
+<script>
+var r=Math.round(Math.random()*1000000);
+document.write('<img src=/cgi-bin/traffic_plus?company=danzen&page=zimBitsSlideV&r='+r+' width=1 height=1>');
+</script>
+</body>
+</html>
