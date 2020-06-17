@@ -1,0 +1,265 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>ZIM Quiz</title>
+
+<!-- Welcome to ZIM at http://zimjs.com - Code Interactive Media Pizzazz!             -->
+<!-- ZIM runs on the HTML Canvas powered by JavaScript and CreateJS http://createjs.com -->
+<!-- Founded by Inventor Dan Zen - http://danzen.com - Canadian New Media Award Winner     -->
+<!-- ZIM is free to use. You can donate to help improve ZIM at http://zimjs.com/donate     -->
+
+<script src="https://zimjs.org/cdn/1.3.0/createjs.js"></script>
+<script src="https://zimjs.org/cdn/cat/00/zim.js"></script>
+<!-- use zimjs.com/distill for minified individual functions! -->
+<script src="https://zimjs.org/cdn/pizzazz_02.js"></script>
+
+<script src="quiz/intro.js"></script>
+<script src="quiz/scramble.js"></script>
+<script src="quiz/listen.js"></script>
+<script src="quiz/match.js"></script>
+<script src="quiz/spell.js"></script>
+<script src="quiz/puzzle.js"></script>
+<script src="quiz/drag.js"></script>
+<script src="quiz/difference.js"></script>
+
+<script>
+
+
+// ~~~~~~~~~~~~~~~~~~~~
+// ZIM E-LEARNING ZAPP
+// This is a sample Zapp with multiple types of questions and activities.
+// More pages will be added in time - and new types can be requested.
+// The idea is to show how ZIM is ideal for making e-learning apps.
+// There are also many Zapps at https://zimjs.com/examples that are relevant.
+// and a Learn Apps section at https://zimjs.com/apps.html (press the MORE button too).
+
+// This is not exactly a tempate for sale or production.
+// For instance, we do not separate the data out to make it completely modular...
+// You are, however, welcome to use any of it (aside from perhaps the assets)
+// and include code in works for education or sale.
+// If you are successful, remember that many hours and years of experience
+// went into this, please consider a donation at https://zimjs.com/donate.
+// Do not donate if you are a student or having trouble making ends meet.
+
+// OTHER CREDITS
+// Animal silhouettes artist - zcool
+// Background music at https://freepd.com/world.php by Kevin MacLeod
+
+
+// ~~~~~~~~~~~~~~~~~~~~
+// ZIM TEMPLATE - https://zimjs.com/code.html
+
+// SCALING OPTIONS
+// scaling can have values as follows with full being the default
+// "fit"    sets canvas and stage to dimensions and scales to fit inside window size
+// "outside"    sets canvas and stage to dimensions and scales to fit outside window size
+// "full"    sets stage to window size with no scaling
+// "tagID"    add canvas to HTML tag of ID - set to dimensions if provided - no scaling
+
+var scaling = "fit"; // this will resize to fit inside the screen dimensions
+var width = 1024;
+var height = 768;
+var color = green;
+var outerColor = darker;
+
+// ~~~~~~~~~~~~~~~~~~~~
+// ASSETS
+// We used the ZIM AssetList to get asset names: https://zimjs.com/assetlist/
+// Then we separated out an array for the animals in particular as we will collage them
+// Different asset folders can be used BUT then the ZIM asset object format must be used:
+// {id:"name", src:"filename", path:"path/"} - which is just a little more complex
+// See https://zimjs.com/docs.html?item=Frame
+// then see the Frame assets and path parameters and more info under loadAssets() and asset() methods
+// Use the ZIM asset object to limit sound assets from playing more than once
+// Note that we do this with some of the sounds below - this works with the sound play() interrupt parameter
+// See https://zimjs.com/docs.html?item=Sound
+var animals = [
+    "alligator.jpg", "beetle.jpg", "bird.jpg", "butterfly.jpg", "crab.jpg", "dolphin.jpg", "dragonfly.jpg", "duck.jpg", "elephant.jpg", "fish.jpg", "fly.jpg", "giraffe.jpg", "grasshopper.jpg", "hippo.jpg", "horse.jpg", "kuala.jpg", "ladybug.jpg", "mantis.jpg",
+    "monkey.jpg", "owl.jpg", "parrot.jpg", "peacock.jpg", "pelican.jpg", "penguin.jpg", "pig.jpg", "rabbit.jpg", "rooster.jpg", "seahorse.jpg", "shark.jpg", "sheep.jpg", "shell.jpg", "spider.jpg", "squid.jpg", "squirrel.jpg", "stork.jpg", "whale.jpg"
+];
+var sounds = ["dragonfly.mp3", "ladybug.mp3", "butterfly.mp3", "spider.mp3", "owl.mp3", "bird.mp3", "penguin.mp3", "peacock.mp3", "dolphin.mp3", "whale.mp3", "fish.mp3", "shark.mp3"];
+var assets = [{font:"reuben", src:"Reuben.otf"}, "intro.jpg", "drag.jpg", "press.jpg", "puzzle.jpg", "forest.mp3", "tree.png", "water.png", "field.png", "mantis2.jpg",
+    {id:"woohoo", maxNum:1, src:"woohoo.mp3"},
+    {id:"tryagain", maxNum:1, src:"tryagain.mp3"},
+    {id:"scramble", maxNum:1, src:"scramble.mp3"},
+    {id:"listen", maxNum:1, src:"listen.mp3"},
+    {id:"match", maxNum:1, src:"match.mp3"},
+    {id:"spell", maxNum:1, src:"spell.mp3"},
+    {id:"puzzle", maxNum:1, src:"puzzle.mp3"},
+    {id:"drag", maxNum:1, src:"drag.mp3"},
+    {id:"difference", maxNum:1, src:"difference.mp3"}
+].concat(animals).concat(sounds);
+var path = "assets/";
+var progress = new ProgressBar({foregroundColor:orange, backgroundColor:purple}).sca(2);
+
+// as of ZIM 5.5.0 you do not need to put zim before ZIM functions and classes
+var frame = new Frame(scaling, width, height, color, outerColor, assets, path, progress);
+frame.on("ready", function() {
+    zog("ready from ZIM Frame"); // logs in console (F12 - choose console)
+
+    var stage = frame.stage;
+    var stageW = frame.width;
+    var stageH = frame.height;
+
+    // ~~~~~~~~~~~~~~~~~
+    // PAGES
+    // The pages are in their own js files each in a function
+    // Their variables are private to those functions
+    // so any objects in those pages we want to access we have stored on the page as a property
+    // For instance, a go button... would be page1.go
+    // The stage is only known in frame.on(ready) function so we pass it to these functions
+    // that way, those functions know how big the stage is, etc.
+
+    var intro = makeIntro(stage);
+    var scramble = makeScramble(stage);
+    var listen = makeListen(stage);
+    var match = makeMatch(stage);
+    var spell = makeSpell(stage);
+    var puzzle = makePuzzle(stage);
+    var drag = makeDrag(stage);
+    var difference = makeDifference(stage);
+
+    // ~~~~~~~~~~~~~~~~~
+    // PAGES OBJECT
+    // we keep track of what pages are shown on the stage with this Pages object
+    // the swipe array is what page is on the left, right, above and below
+    var pages = new Pages([
+            {page:intro, swipe:[difference, scramble]},
+            {page:scramble, swipe:[intro, listen]},
+            {page:listen, swipe:[scramble, match]},
+            {page:match, swipe:[listen, spell]},
+            {page:spell, swipe:[match, puzzle]},
+            {page:puzzle, swipe:[spell, drag]},
+            {page:drag, swipe:[puzzle, difference]},
+            {page:difference, swipe:[drag, intro]}
+        ], "bubbleZIM", .7
+    ).addTo();
+
+    // some items need to be on the stage to be created with proper bounds
+    // this quickly puts all the pages on stage and then removes them!
+    pages.puff(1);
+
+    // ~~~~~~~~~~~~~~~~~
+    // PAGE EVENTS
+    // These are added as we work on the pages
+    // If we were doing Model View Controller
+    // the pages would be made in the view
+    // and the events below would be in the Controller
+
+    // this event is called as we go to a new page
+    // we can ask for pages.page to tell us the new page
+    // we can ask for pages.lastPage to tell us... the last page
+    // sometimes there are things we need to start or stop as you can see
+    var backingSound;
+    pages.on("page", function () {
+        if (!backingSound && intro.music.toggled) {
+            backingSound = asset("forest.mp3").play(.1, true);
+        }
+        if (pages.page == listen) {
+            listen.pics.loop(function (pic) {
+                pic.pauseAnimate(); // pause wiggles
+            });
+        }
+        var lastPage = pages.lastPage;
+        if (lastPage == drag || lastPage == difference) {
+            if (lastPage.go.alpha > 0) lastPage.reset();
+        }
+        if (lastPage != intro) {
+            lastPage.replay.stopAnimate().alp(0);
+            lastPage.go.stopAnimate().alp(0);
+            lastPage.read.stop();
+        }
+        if (lastPage == scramble) {
+            // scramble needs to be scrambled in place
+            // so not when the page is transitioned off screen
+            // and not when the page is not on stage
+            // so this calls scramble before the page is moved
+            // if we put this in the "pageTransitioned" it would be too late
+            scramble.scrambler.scramble(0);
+        }
+        if (lastPage == listen) {
+            listen.play.alp(1).sca(1);
+        }
+        if (lastPage == puzzle) {
+            puzzle.scrambler.alp(1).scramble(0);
+            puzzle.pic.removeFrom();
+        }
+    });
+
+    // this event is called once the page finishes its transitions
+    pages.on("pagetransitioned", function () {
+        if (pages.page != intro) pages.page.readQuestion();
+    });
+
+    intro.go.on("mousedown", function () {
+        pages.go(scramble, "right");
+    });
+    scramble.go.on("mousedown", function () {
+        if (scramble.read) scramble.read.stop();
+        pages.go(listen, "right");
+    });
+    listen.go.on("mousedown", function () {
+        if (listen.read) listen.read.stop();
+        pages.go(match, "right");
+    });
+    match.go.on("mousedown", function () {
+        if (match.read) match.read.stop();
+        pages.go(spell, "right");
+    });
+    spell.go.on("mousedown", function () {
+        if (puzzle.read) spell.read.stop();
+        pages.go(puzzle, "right");
+    });
+    puzzle.go.on("mousedown", function () {
+        if (puzzle.read) puzzle.read.stop();
+        pages.go(drag, "right");
+    });
+    drag.go.on("mousedown", function () {
+        if (drag.read) drag.read.stop();
+        pages.go(difference, "right");
+    });
+    difference.go.on("mousedown", function () {
+        if (difference.read) difference.read.stop();
+        pages.go(intro, "right");
+    });
+
+    intro.music.change(function () {
+        if (backingSound) backingSound.paused = !intro.music.toggled;
+        else if (intro.music.toggled) backingSound = asset("forest.mp3").play(.1, true);
+    });
+
+    // do not want pages to swipe when in the middle of scrambling
+    spell.on("freezeon", function () {
+        pages.disable();
+    });
+    spell.on("freezeoff", function () {
+        pages.enable();
+    });
+
+    // for some reason, sliding page half way through collage
+    // is not caching the collage - it is only a certain interval of time - weird
+    pages.disable();
+    timeout(1, function () {
+        pages.enable();
+    });
+
+
+    stage.update(); // this is needed to show any changes
+
+}); // end of ready
+
+</script>
+
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+
+</head>
+
+<body>
+<!-- canvas with id="myCanvas" is made by zim Frame -->
+<script>
+var r=Math.round(Math.random()*1000000);
+document.write('<img src=/cgi-bin/traffic_plus?company=danzen&page=zimCatElearnQuiz&r='+r+' width=1 height=1>');
+</script>
+</body>
+</html>
