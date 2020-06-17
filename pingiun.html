@@ -1,0 +1,225 @@
+<html>
+<script>
+       const scaling = "fit"; // this will resize to fit inside the screen dimensions
+        const width = 1024;
+        const height = 768;
+        const color = white; // ZIM colors like green, blue, pink, faint, clear, etc.
+        const outerColor = dark; // any HTML colors like "violet", "#333", etc. are fine to use
+        const assets = ["https://i.postimg.cc/nrMXrDxq/mouth.png", "https://i.postimg.cc/brMstwYW/foot.png", "https://i.postimg.cc/wTytdL0p/background.png", "https://i.postimg.cc/TYzK214W/penguine.png","https://i.postimg.cc/XJr3tS0k/penguin.png"];
+
+        const frame = new Frame(scaling, width, height, color, outerColor, assets);
+        frame.on("ready", () => { // ES6 Arrow Function - like function(){}
+            zog("ready from ZIM Frame"); // logs in console (F12 - choose console)
+
+            const stage = frame.stage;
+            let stageW = frame.width;
+            let stageH = frame.height;
+
+
+
+            var background = asset("https://i.postimg.cc/wTytdL0p/background.png").center();
+            var outline = asset("https://i.postimg.cc/TYzK214W/penguine.png").center().mov(-276, 0).alp(.6);
+
+            var intro = new Label({
+                text: "Drag and change the shape to match the penguin.",
+                backgroundColor: white,
+                corner: 8
+            }).centerReg().mov(0, -350).animate({
+                props: { alpha: 0 },
+                time: 2000,
+                wait: 4000
+            });
+
+            // create the moving shapes ---- start
+            var mouth = asset("https://i.postimg.cc/nrMXrDxq/mouth.png").centerReg().loc(890, 140).drag().sha("rgba(0,0,0,.2)", 10, 5, 5);
+            var foot = asset("https://i.postimg.cc/brMstwYW/foot.png").centerReg().loc(820, 600).drag().sha("rgba(0,0,0,.2)", 10, 5, 5);
+            var eye = new Circle(10, black).centerReg().loc(800, 140).drag().sha("rgba(0,0,0,.2)", 10, 5, 5);
+
+
+            var frontBlob = new Blob({
+                borderColor: faint,
+                borderWidth: 10,
+                radius: 55,
+                interactive: false
+            }).loc(820, 250);
+
+            var frontBody = new Blob({
+                // move:false
+                color: white,
+                radius: 55,
+                points: 6,
+                onTop: false
+            }).loc(frontBlob).alp(.8);
+
+            var backBlob = new Blob({
+                borderColor: faint,
+                borderWidth: 10,
+                radius: 70,
+                interactive: false
+            }).loc(820, 450);
+
+            var backBody = new Blob({
+                // move:false
+                color: black,
+                radius: 70,
+                points: 8
+            }).loc(backBlob).alp(.6);
+
+            frontBody
+                .sha("rgba(0,0,0,.2)", 10, 5, 5)
+                .wiggle("y", 250, 2, 4, 250, 350, 4500);
+
+            backBody
+                .sha("rgba(0,0,0,.2)", 10, 5, 5)
+                .wiggle("y", 450, 1, 4, 270, 370, 5000);
+
+            // create the moving shapes ---- end
+
+            // create blank shapes / points to be hit ---- start 
+            var front = new Beads({
+                path: new Blob({ points: frontPoints, color: black }).alp(.4),
+                obj: new Circle(3, series(white, white)),
+                visible: false,
+                count: 135
+            }).center().mov(-276, 20).drag().ord(-4);
+
+            var back = new Beads({
+                path: new Blob({ points: backPoints }),
+                obj: new Circle(3, series(dark, dark)).centerReg(),
+                visible: false,
+                count: 150
+            }).center().mov(-300, 0).ord(-4);
+
+            Ticker.add(function () {
+                frontBlob.points = frontBody.points;
+                //blob.loc(body);
+                frontBlob.x = frontBody.x;
+                frontBlob.y = frontBody.y;
+                frontBlob.update();
+
+                backBlob.points = backBody.points;
+                //blob.loc(body);
+                backBlob.x = backBody.x;
+                backBlob.y = backBody.y;
+                backBlob.update();
+            });
+            // create blank shape to be hit ---- start 
+
+
+            // hitting tests when the game is running ---- start
+
+
+            var finalCount = 0;
+frontBody.on("pressup", function (e) {
+                var num = 0;
+                front.beads.loop(function (circle) {
+                    if (frontBlob.hitTestReg(circle)) {
+                        num += 1;
+                    };
+                    //zog(num);
+                });
+                if (num > 45) { //45   
+                    front.removeFrom();
+                    frontBody.move = false;
+                    frontBody.interactive = false;
+                    frontBody.hideControls();
+                    frontBody.alpha = 1;
+                    frontBody.sha({ color: null });
+                    finalCount += 1;
+                    e.remove();
+                    endPenguin();
+                };
+            });
+            backBody.on("pressup", function (e) {
+                var num = 0;
+                back.beads.loop(function (circle) {
+                    if (backBlob.hitTestReg(circle)) {
+                        num += 1;
+                    };
+                });
+                //zog(num);
+                if (num > 27) { // 27  
+                    back.removeFrom();
+                    backBody.move = false;
+                    backBody.interactive = false;
+                    backBody.hideControls();
+                    backBody.alpha = 1;
+                    backBody.sha({ color: null });
+                    finalCount += 1;
+                    e.remove();
+                    endPenguin();
+                };
+
+            });
+
+            var mouthEvent = mouth.on("pressup", function (e) {
+                if (mouth.hitTestPoint(361, 212)) {
+                    mouth.x = 361;
+                    mouth.y = 212;
+                    mouth.sha({ color: null });
+                    mouth.noDrag();
+                };
+                finalCount += 1;
+                e.remove();
+                //zog("mouth");
+                endPenguin();
+            });
+            //zog(finalCount);
+
+            foot.on("pressup", function (e) {
+                if (foot.hitTestPoint(230, 610)) {
+                    foot.x = 230;
+                    foot.y = 610;
+                    foot.sha({ color: null });
+                    foot.noDrag();
+                    finalCount += 1;
+                    e.remove();
+                    //zog("foot");
+                    endPenguin();
+                };
+            });
+
+            eye.on("pressup", function (e) {
+                if (eye.hitTestPoint(289, 209)) {
+                    eye.x = 289;
+                    eye.y = 209;
+                    eye.top();
+                    eye.noDrag();
+                    eye.sha({ color: null });
+                    finalCount += 1;
+                    //zog("eye");
+                    e.remove();
+                    endPenguin();
+                };
+            });
+
+
+            function endPenguin() {
+                if (finalCount == 5) {
+                    zog("You made it!");
+                    new Label("You've save the penguin!", 25).loc(690, 150);
+                    var finalPenguin = asset("https://i.postimg.cc/XJr3tS0k/penguin.png").centerReg().loc(850, 400).alp(0);
+                    finalPenguin.animate({
+                        props: { alpha: 1 },
+                        time: 5000
+                    });
+                };
+            };
+
+            // hitting tests when the game is running ---- end
+
+            // game ending
+
+            //function penguinEnding() { };
+
+
+
+
+
+            stage.update(); // this is needed to show any changes
+
+        }); // end of ready
+        </script>
+        <body>
+        </body>
+        </html>
